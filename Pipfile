@@ -6,6 +6,10 @@ name = "pypi"
 [packages]
 django = "===2.2.5"
 graphene-django = "*"
+gunicorn = "*"
+dj-database-url = "*"
+psycopg2-binary = "*"
+whitenoise = "*"
 
 [dev-packages]
 

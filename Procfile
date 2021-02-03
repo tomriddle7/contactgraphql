@@ -1,0 +1,1 @@
+web: gunicorn contactgraphql.wsgi --log-file -

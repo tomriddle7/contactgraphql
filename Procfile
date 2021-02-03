@@ -1,1 +1,1 @@
-web: gunicorn contactgraphql:app
+web: gunicorn config.wsgi --log-file -

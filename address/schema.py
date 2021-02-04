@@ -42,3 +42,33 @@ class Query(object):
 
     def resolve_all_contact(self, info, **kwargs):
     	return Contact.objects.all()
+
+class ContactMutation(graphene.Mutation):
+    id = graphene.Int()
+    name = graphene.String()
+    tel = graphene.String()
+    address = graphene.String()
+    photo = graphene.String()
+
+    class Arguments:
+        # The input arguments for this mutation
+        name = graphene.String(required=True)
+        tel = graphene.String(required=True)
+        address = graphene.String(required=True)
+        photo = graphene.String(required=True)
+
+    def mutate(self, info, name, tel, address, photo):
+        contact = Contact(name=name, tel=tel, address=address, photo=photo)
+        contact.save()
+        
+        # Notice we return an instance of this mutation
+        return ContactMutation(id=contact.id,
+            name=contact.name,
+            tel=contact.tel,
+            address=contact.address,
+            photo=contact.photo
+        )
+
+class Mutation(graphene.ObjectType):
+    update_contact = ContactMutation.Field()
+

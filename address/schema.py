@@ -20,55 +20,30 @@ class Query(object):
     all_contact = graphene.List(ContactType)
 
     def resolve_contact(self, info, id=None, gte_id=None, lte_id=None, name=None, tel=None, address=None, photo=None, **kwargs):
+      filter = Q()
+      
       if id:
-        filter = (
-          Q(id__exact=id)
-        )
-        return Contact.objects.filter(filter)
-
-      if gte_id and lte_id:
-        filter = (
-          Q(id__range=(gte_id, lte_id))
-        )
-        return Contact.objects.filter(filter)
+        filter.add(Q(id__exact=id), Q.AND)
 
       if gte_id:
-        filter = (
-          Q(id__gte=gte_id)
-        )
-        return Contact.objects.filter(filter)
+        filter.add(Q(id__gte=gte_id), Q.AND)
 
       if lte_id:
-        filter = (
-          Q(id__lte=lte_id)
-        )
-        return Contact.objects.filter(filter)
+        filter.add(Q(id__lte=lte_id), Q.AND)
 
       if name:
-        filter = (
-          Q(name__contains=name)
-        )
-        return Contact.objects.filter(filter)
+        filter.add(Q(name__contains=name), Q.AND)
 
       if tel:
-        filter = (
-          Q(tel__contains=tel)
-        )
-        return Contact.objects.filter(filter)
+        filter.add(Q(tel__contains=tel), Q.AND)
 
       if address:
-        filter = (
-          Q(address__contains=address)
-        )
-        return Contact.objects.filter(filter)
+        filter.add(Q(address__contains=address), Q.AND)
 
       if photo:
-        filter = (
-          Q(photo__contains=photo)
-        )
-        return Contact.objects.filter(filter)
+        filter.add(Q(photo__contains=photo), Q.AND)
 
-      return None
+      return Contact.objects.filter(filter)
 
     def resolve_all_contact(self, info, **kwargs):
     	return Contact.objects.all()

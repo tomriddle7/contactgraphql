@@ -1,14 +1,17 @@
 import graphene
 from graphene_django.types import DjangoObjectType
 from .models import Contact
+from django.db.models import Q
 
 class ContactType(DjangoObjectType):
   class Meta:
     model = Contact
   
 class Query(object):
-    contact = graphene.Field(ContactType,
+    contact = graphene.List(ContactType,
                               id=graphene.Int(),
+                              gte_id=graphene.Int(),
+                              lte_id=graphene.Int(),
                               name=graphene.String(),
                               tel=graphene.String(),
                               address=graphene.String(),
@@ -16,27 +19,54 @@ class Query(object):
 
     all_contact = graphene.List(ContactType)
 
-    def resolve_contact(self, info, **kwargs):
-      id = kwargs.get('id')
-      name = kwargs.get('name')
-      tel = kwargs.get('tel')
-      address = kwargs.get('address')
-      photo = kwargs.get('photo')
-      
-      if id is not None:
-        return Contact.objects.get(pk=id)
-      
-      if name is not None:
-        return Contact.objects.get(name=name)
+    def resolve_contact(self, info, id=None, gte_id=None, lte_id=None, name=None, tel=None, address=None, photo=None, **kwargs):
+      if id:
+        filter = (
+          Q(id__exact=id)
+        )
+        return Contact.objects.filter(filter)
 
-      if tel is not None:
-        return Contact.objects.get(tel=tel)
-        
-      if address is not None:
-        return Contact.objects.get(address=address)
-      
-      if photo is not None:
-        return Contact.objects.get(photo=photo)
+      if gte_id and lte_id:
+        filter = (
+          Q(id__range=(gte_id, lte_id))
+        )
+        return Contact.objects.filter(filter)
+
+      if gte_id:
+        filter = (
+          Q(id__gte=gte_id)
+        )
+        return Contact.objects.filter(filter)
+
+      if lte_id:
+        filter = (
+          Q(id__lte=lte_id)
+        )
+        return Contact.objects.filter(filter)
+
+      if name:
+        filter = (
+          Q(name__contains=name)
+        )
+        return Contact.objects.filter(filter)
+
+      if tel:
+        filter = (
+          Q(tel__contains=tel)
+        )
+        return Contact.objects.filter(filter)
+
+      if address:
+        filter = (
+          Q(address__contains=address)
+        )
+        return Contact.objects.filter(filter)
+
+      if photo:
+        filter = (
+          Q(photo__contains=photo)
+        )
+        return Contact.objects.filter(filter)
 
       return None
 
